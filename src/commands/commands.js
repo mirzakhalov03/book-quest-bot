@@ -5,18 +5,19 @@ import { trackStartClick } from '../reports/visitorTracking.js';
 
 export const registerCommands = (bot) => {
   bot.start(async (ctx) => {
-    await trackStartClick(ctx); 
+    await trackStartClick(ctx);
 
     try {
       const telegram_id = ctx.from.id;
 
+      // Check if user already exists
       const { data: existingUser } = await supabase
         .from('registration')
         .select('id, full_name, order_number')
         .eq('telegram_id', telegram_id)
         .single();
 
-      // ✅ Persistent keyboard — appears for everyone when /start is pressed
+      // Persistent main menu (reply keyboard)
       const mainKeyboard = Markup.keyboard([
         ['📖 Book Info', '🎧 Book Audios', 'ℹ️ About Us']
       ]).resize().persistent();
@@ -24,6 +25,7 @@ export const registerCommands = (bot) => {
       if (existingUser) {
         const paddedOrder = String(existingUser.order_number).padStart(3, '0');
 
+        // Send welcome back messages + persistent menu
         await Promise.all([
           ctx.reply(
             `Assalomu alaykum, ${existingUser.full_name}! 😊\n` +
@@ -37,21 +39,20 @@ export const registerCommands = (bot) => {
               `— Kitob o‘qish muddati tugagach, sizga test havolasi shu bot orqali yuboriladi.`
           ),
         ]);
+
         return;
       }
 
+      // If new user — ask for registration confirmation with inline buttons
       await ctx.replyWithHTML(
         `Assalomu alaykum, kitobxon do‘stim! 😊\n` +
           `<b>📚 Book Quest loyihasiga xush kelibsiz!</b>\n\n` +
           `Bu loyiha orqali biz har oy yangi kitobni birgalikda o‘qib, yakunda qisqa test orqali bilimimizni sinaymiz.\n\n` +
           `Ro‘yxatdan o‘tishni xohlaysizmi?`,
-        {
-          ...Markup.inlineKeyboard([
-            [Markup.button.callback('✅ Ha, ro‘yxatdan o‘taman', 'confirm_yes')],
-            [Markup.button.callback('❌ Yo‘q, keyinroq', 'confirm_no')],
-          ]),
-          ...mainKeyboard, // persistent bottom menu (appears for all users)
-        }
+        Markup.inlineKeyboard([
+          [Markup.button.callback('✅ Ha, ro‘yxatdan o‘taman', 'confirm_yes')],
+          [Markup.button.callback('❌ Yo‘q, keyinroq', 'confirm_no')],
+        ])
       );
     } catch (err) {
       console.error('⚠️ start error:', err);
@@ -67,10 +68,12 @@ export const registerCommands = (bot) => {
       `📖 <b>Tavsif:</b> Ushbu kitob hadislar orqali inson hayotini Qur’on va Sunnat asosida yoritadi.`
     );
   });
+
   bot.hears('🎧 Book Audios', async (ctx) => {
-    await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us! 😊')
-  })
+    await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us! 😊');
+  });
+
   bot.hears('ℹ️ About Us', async (ctx) => {
-    await ctx.replyWithHTML('Soon, About Us is coming...\n\nStay with us! 😊')
-  })
+    await ctx.replyWithHTML('Soon, About Us is coming...\n\nStay with us! 😊');
+  });
 };
