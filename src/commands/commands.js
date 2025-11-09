@@ -61,14 +61,38 @@ export const registerCommands = (bot) => {
 
   // ✅ Handle Book Info button
   bot.hears('📖 Book Info', async (ctx) => {
-    await ctx.replyWithHTML(
-      `📘 <b>Joriy kitob:</b> “Hadis va Hayot – I jild”\n\n` +
-      `🖋 <b>Muallif:</b> Shayx Muhammad Sodiq Muhammad Yusuf\n` +
-      `📖 <b>Tavsif:</b> Ushbu kitob hadislar orqali inson hayotini Qur’on va Sunnat asosida yoritadi.`
+    await ctx.replyWithPhoto(
+      { source: '/Users/macbookuz/Desktop/Book Quest/book-quest-bot/book_photo.jpg' }, // or use a URL
+      {
+        caption: `📖 <b>SOHILSIZ DENGIZ</b>
+✍️ Ahmad Muhammad Tursun
+
+📊 <b>Janr:</b> Ilmiy-tarixiy roman
+📄 <b>Sahifalar:</b> 254
+🕰 <b>O'qish muddati:</b> 10 kun
+🎯 <b>Qiyinlik darajasi:</b> O'rta
+🌐 <b>Til:</b> O'zbek
+
+💭 <i>"Sohilsiz Dengiz" — Ahmad Muhammad Tursun tomonidan yozilgan ilmiy-tarixiy roman. Kitob mashhur muhaddis Abu Abdulloh Muhammad ibn Ismoil al-Buxoriyning hayoti, ilmiy izlanishlari va ustoz-shogird aloqalarini badiiy uslubda ochib beradi. Cheksiz dengiz kabi insoniy izlanishlar, orzu va ma’rifat mavzulari kitob sahifalarida jonlanadi.</i>
+
+📍 <b>QAYERDAN TOPISH MUMKIN?</b>
+
+<blockquote>📚 <b>QOG'OZ KITOB:</b></blockquote>
+🏪 <a href="https://t.me/HilolNashr/28905">Hilol Nashr</a> va kitob do'konlar
+💰 Narx: 43,000 - 50,000 so'm
+
+<blockquote>🎧 <b>AUDIO KITOB:</b></blockquote>
+- Book Quest Bot
+- <a href="https://youtu.be/sEp36sGbNDQ?si=6o2JCl_YJm2ZwFlX">YouTube</a>
+- Telegram Audio Kitob kanallari`,
+        parse_mode: 'HTML',
+      }
     );
   });
+  
+  
   bot.hears('🎧 Book Audios', async (ctx) => {
-    await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us! 😊')
+    await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us!😊')
   })
   bot.hears('ℹ️ About Us', async (ctx) => {
     await ctx.replyWithHTML('Soon, About Us is coming...\n\nStay with us! 😊')
