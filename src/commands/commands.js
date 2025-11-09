@@ -95,6 +95,26 @@ export const registerCommands = (bot) => {
     await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us!😊')
   })
   bot.hears('ℹ️ About Us', async (ctx) => {
-    await ctx.replyWithHTML('Soon, About Us is coming...\n\nStay with us! 😊')
+    await ctx.replyWithHTML(`
+  <b>📚 Book Quest</b> — Book Quest 2024-yilda ikkita kitobxon do'stlar - <b>Abdulakhad Vokhabov</b> va <b>Javohir Mirzakhalov</b> tomonidan asos solindi.
+  
+  🎯 Maqsadimiz — insonlar orasida kitob o‘qishga bo‘lgan qiziqishni kuchaytirish 
+  va o‘qish madaniyatini rivojlantirishdir.
+  
+<b>Bizning Jamoa:</b>
+  <blockquote><b>👨‍💻 Abdulakhad Vokhabov</b></blockquote>
+  <b>Co-Founder & Organizer</b>
+  🎓 Millat Umidi University, Computer Science (1-bosqich talabasi)
+  💼 Frontend Developer sifatida faoliyat olib boradi.  
+  <em>"Kitob — bu eng arzon sayohat, lekin eng qimmatli tajriba."</em>
+
+  ———————————————
+
+  <blockquote><b>👨‍💻 Javohir Mirzakhalov</b></blockquote>
+  <b>Co-Founder & Manager</b>
+  🎓 Inha University, Computer Science (2-bosqich talabasi)
+  🚀 SaTashkent StartUp loyihasida faoliyat yuritadi.  
+  <em>"Yaxshi kitob — yaxshi do‘st kabi."</em>
+    `)
   })
 };
