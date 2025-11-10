@@ -96,21 +96,33 @@ export const registerCommands = (bot) => {
     await ctx.replyWithHTML('Soon, book audios are coming...\n\nStay with us!😊')
   })
   bot.hears('ℹ️ About Us', async (ctx) => {
-    await ctx.replyWithHTML(`
-<b>📚 Book Quest</b> — Book Quest 2024-yilda ikkita kitobxon do'stlar - <b>Abdulakhad Vokhabov</b> va <b>Javohir Mirzakhalov</b> tomonidan asos solindi.
+    await ctx.replyWithMediaGroup([
+      {
+        type: 'photo',
+        media: { source: './abdulakhad.jpg' },
+        caption: `
+  <b>📚 Book Quest</b> — 2024-yilda ikkita kitobxon do'stlar - <b>Abdulakhad Vokhabov</b> va <b>Javohir Mirzakhalov</b> tomonidan asos solindi.
+    
+  🎯 Maqsadimiz — insonlar orasida kitob o‘qishga bo‘lgan qiziqishni kuchaytirish va o‘qish madaniyatini rivojlantirishdir.
   
-🎯 Maqsadimiz — insonlar orasida kitob o‘qishga bo‘lgan qiziqishni kuchaytirish va o‘qish madaniyatini rivojlantirishdir.
+  <b>Bizning Jamoa:</b>
+  <blockquote><b>👨‍💻 Abdulakhad Vokhabov</b></blockquote>
+  <b>Co-Founder & Organizer</b>
+  🎓 Millat Umidi University, Computer Science 
+  💼 Freelance va Ingliz Tili Ustozi  
   
-<b>Bizning Jamoa:</b>
-<blockquote><b>👨‍💻 Abdulakhad Vokhabov</b></blockquote>
-<b>Co-Founder & Organizer</b>
-🎓 Millat Umidi Universiteti, Computer Science 
-💼 Frontend dasturchi  
-
-<blockquote><b>👨‍💻 Javohir Mirzakhalov</b></blockquote>
-<b>Co-Founder & Manager</b>
-🎓 INHA Universiteti, Computer Science
-🚀 SATashkent'da frontend dasturchi.  
-    `)
+  <blockquote><b>👨‍💻 Javohir Mirzakhalov</b></blockquote>
+  <b>Co-Founder & Manager</b>
+  🎓 INHA University, Computer Science
+  🚀 SATashkent'da frontend dasturchi.  
+        `,
+        parse_mode: 'HTML'
+      },
+      {
+        type: 'photo',
+        media: { source: './javohir.jpg' }
+      }
+    ])
   })
+
 };
