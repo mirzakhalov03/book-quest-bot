@@ -9,13 +9,42 @@ import { trackStartClick } from '../reports/visitorTracking.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Safely load audio file IDs
-const audioFileIdsPath = path.resolve(__dirname, '../audioFileIds.json');
-const audioFileIds = JSON.parse(fs.readFileSync(audioFileIdsPath, 'utf8'));
+// ✅ Safely load audio file IDs
+let audioFileIds = [];
+try {
+  const audioFileIdsPath = path.resolve(__dirname, '../audioFileIds.json');
+  const rawData = fs.readFileSync(audioFileIdsPath, 'utf8');
+  audioFileIds = JSON.parse(rawData);
+} catch (err) {
+  console.warn('⚠️ Warning: Could not load audioFileIds.json:', err.message);
+  audioFileIds = [];
+}
+
+// ✅ Helper: Main Keyboard
+const mainKeyboard = Markup.keyboard([
+  ['📖 Kitob Haqida'],
+  ['🎧 Kitob Audiosi'],
+  ['ℹ️ Jamoa Haqida']
+])
+  .resize()
+  .persistent();
+
+// ✅ Track cooldown to prevent double /start trigger
+const startCooldown = new Map(); // userId -> timestamp (ms)
+const START_COOLDOWN_MS = 2000; // 2 seconds buffer
 
 export const registerCommands = (bot) => {
   // 🟢 START COMMAND
   bot.start(async (ctx) => {
+    const userId = ctx.from?.id;
+    const now = Date.now();
+
+    // Prevent multiple triggers in short time
+    if (startCooldown.has(userId) && now - startCooldown.get(userId) < START_COOLDOWN_MS) {
+      return; // ignore duplicate start
+    }
+    startCooldown.set(userId, now);
+
     await trackStartClick(ctx);
 
     try {
@@ -25,42 +54,34 @@ export const registerCommands = (bot) => {
         .from('registration')
         .select('id, full_name, order_number')
         .eq('telegram_id', telegramId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') throw error; // ignore "no rows" error
-
-      const mainKeyboard = Markup.keyboard([
-        ['📖 Kitob Haqida'],
-        ['🎧 Kitob Audiosi'],
-        ['ℹ️ Jamoa Haqida']
-      ])
-        .resize()
-        .persistent();
+      if (error) throw error;
 
       if (existingUser) {
         const paddedOrder = String(existingUser.order_number).padStart(3, '0');
 
-        await Promise.all([
-          ctx.reply(
-            `Assalomu alaykum, ${existingUser.full_name}! 😊\n` +
-              `Siz allaqachon ro‘yxatdan o‘tgansiz ✅\n` +
-              `Sizning tartib raqamingiz: #${paddedOrder}`,
-            mainKeyboard
-          ),
-          ctx.reply(
-            [
-              `Iltimos, loyihada ushbu botdan foydalanish qoidalari bilan tanishib chiqing:`,
-              ``,
-              `— Musobaqa yakunlanmaguncha botni o‘chirib yubormang.`,
-              `— Kitob o‘qish muddati tugagach, sizga test havolasi shu bot orqali yuboriladi.`,
-            ].join('\n')
-          ),
-        ]);
+        // Send messages in strict order
+        await ctx.reply(
+          `Assalomu alaykum, ${existingUser.full_name}! 😊\n` +
+            `Siz allaqachon ro‘yxatdan o‘tgansiz ✅\n` +
+            `Sizning tartib raqamingiz: #${paddedOrder}`,
+          mainKeyboard
+        );
+
+        await ctx.reply(
+          [
+            `Iltimos, loyihada ushbu botdan foydalanish qoidalari bilan tanishib chiqing:`,
+            ``,
+            `— Musobaqa yakunlanmaguncha botni o‘chirib yubormang.`,
+            `— Kitob o‘qish muddati tugagach, sizga test havolasi shu bot orqali yuboriladi.`,
+          ].join('\n')
+        );
 
         return;
       }
 
-      // 🆕 New User Registration Prompt
+      // 🆕 New User Registration
       await ctx.replyWithHTML(
         [
           `Assalomu alaykum, kitobxon do‘stim! 😊`,
@@ -76,7 +97,7 @@ export const registerCommands = (bot) => {
         ])
       );
     } catch (err) {
-      console.error('⚠️ start error:', err);
+      console.error('⚠️ /start error:', err);
       await ctx.reply('Xatolik yuz berdi, iltimos keyinroq urinib ko‘ring.');
     }
   });
@@ -84,7 +105,6 @@ export const registerCommands = (bot) => {
   // 📖 BOOK INFO
   bot.hears('📖 Kitob Haqida', async (ctx) => {
     const photoPath = path.resolve(__dirname, '../imgs/book_photo.jpg');
-
     const caption = [
       `📖 <b>SOHILSIZ DENGIZ</b>`,
       `✍️ Ahmad Muhammad Tursun`,
@@ -133,14 +153,6 @@ export const registerCommands = (bot) => {
 
   // 🔙 BACK BUTTON
   bot.hears('🔙 Orqaga', async (ctx) => {
-    const mainKeyboard = Markup.keyboard([
-      ['📖 Kitob Haqida'],
-      ['🎧 Kitob Audiosi'],
-      ['ℹ️ Jamoa Haqida']
-    ])
-      .resize()
-      .persistent();
-
     await ctx.reply('🔙 Asosiy menyuga qaytdingiz.', mainKeyboard);
   });
 
@@ -192,7 +204,7 @@ async function sendAudioRange(ctx, start, end) {
       return num >= start && num <= end;
     });
 
-    if (selected.length === 0) {
+    if (!selected.length) {
       return ctx.reply('⚠️ Ushbu oraliqda audio topilmadi.');
     }
 
@@ -200,6 +212,7 @@ async function sendAudioRange(ctx, start, end) {
       await ctx.telegram.sendAudio(userChatId, audio.file_id, {
         caption: audio.file_name.replace('.mp3', ''),
       });
+      await new Promise((r) => setTimeout(r, 200)); // slight delay to avoid rate limits
     }
 
     await ctx.reply('✅ Barcha audios yuborildi.');
