@@ -2,6 +2,11 @@ import { Markup } from 'telegraf';
 import { supabase } from '../supabase/supabase.js';
 import { config } from '../config.js';
 import { trackStartClick } from '../reports/visitorTracking.js';
+import { fileURLToPath } from 'url';
+import path from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const registerCommands = (bot) => {
   bot.start(async (ctx) => {
@@ -62,8 +67,9 @@ export const registerCommands = (bot) => {
 
   // ✅ Handle Book Info button
   bot.hears('📖 Book Info', async (ctx) => {
+    const photoPath = path.resolve(__dirname, '../imgs/book_photo.jpg');
     await ctx.replyWithPhoto(
-      { source: './book_photo.jpg' }, // or use a URL
+      { source: photoPath }, // or use a URL
       {
         caption: `📖 <b>SOHILSIZ DENGIZ</b>
 ✍️ Ahmad Muhammad Tursun
@@ -99,30 +105,29 @@ export const registerCommands = (bot) => {
     await ctx.replyWithMediaGroup([
       {
         type: 'photo',
-        media: { source: './abdulakhad.jpg' },
+        media: { source: path.resolve(__dirname, '../imgs/abdulakhad.jpg') },
         caption: `
   <b>📚 Book Quest</b> — 2024-yilda ikkita kitobxon do'stlar - <b>Abdulakhad Vokhabov</b> va <b>Javohir Mirzakhalov</b> tomonidan asos solindi.
-    
-  🎯 Maqsadimiz — insonlar orasida kitob o‘qishga bo‘lgan qiziqishni kuchaytirish va o‘qish madaniyatini rivojlantirishdir.
   
+  🎯 Maqsadimiz — insonlar orasida kitob o‘qishga bo‘lgan qiziqishni kuchaytirish va o‘qish madaniyatini rivojlantirishdir.
+    
   <b>Bizning Jamoa:</b>
-  <blockquote><b>👨‍💻 Abdulakhad Vokhabov</b></blockquote>
+  <blockquote><b>👨‍💻 <a href="https://t.me/vokhabov27">Abdulakhad Vokhabov</a></b></blockquote>
   <b>Co-Founder & Organizer</b>
   🎓 Millat Umidi University, Computer Science 
   💼 Freelance va Ingliz Tili Ustozi  
-  
-  <blockquote><b>👨‍💻 Javohir Mirzakhalov</b></blockquote>
+    
+  <blockquote><b>👨‍💻 <a href="https://t.me/mirzakhalov03">Javohir Mirzakhalov</a></b></blockquote>
   <b>Co-Founder & Manager</b>
   🎓 INHA University, Computer Science
-  🚀 SATashkent'da frontend dasturchi.  
-        `,
-        parse_mode: 'HTML'
+  🚀 SATashkent'da frontend dasturchi.`,
+        parse_mode: 'HTML',
       },
       {
         type: 'photo',
-        media: { source: './javohir.jpg' }
-      }
-    ])
-  })
+        media: { source: path.resolve(__dirname, '../imgs/javohir.jpg') },
+      },
+    ]);
+  });
 
 };
