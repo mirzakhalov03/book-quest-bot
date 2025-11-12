@@ -5,79 +5,115 @@ import { Markup } from 'telegraf';
 
 export const registerTextHandler = (bot) => {
   bot.on('text', async (ctx) => {
-    // Ignore if admin is broadcasting
-    if (ctx.session?.waitingForBroadcast) return; 
+    try {
+      // 🛑 Skip if not expecting a name or currently broadcasting
+      if (ctx.session?.waitingForBroadcast) return;
+      if (!ctx.session?.waitingForName) return;
 
-    // Only handle text if we're waiting for user's full name
-    if (!ctx.session?.waitingForName) return;
+      const { formatted, error } = formatAndValidateFullName(ctx.message.text);
+      if (error) {
+        return await ctx.reply(error, { parse_mode: 'Markdown' });
+      }
 
-    const { formatted, error } = formatAndValidateFullName(ctx.message.text);
-    if (error) {
-      return await ctx.reply(error, { parse_mode: 'Markdown' });
-    }
+      const full_name = formatted;
+      const telegram_id = ctx.from.id;
+      const username = ctx.from.username || 'no_username';
 
-    const full_name = formatted; // properly capitalized and valid
-    ctx.session.waitingForName = false;
+      // 🔐 Prevent duplicate registration
+      const { data: existingUser, error: existingError } = await supabase
+        .from('registration')
+        .select('id, order_number')
+        .eq('telegram_id', telegram_id)
+        .single();
 
-    const telegram_id = ctx.from.id;
-    const username = ctx.from.username || 'no_username';
+      if (existingError && existingError.code !== 'PGRST116') {
+        console.error('Existing user check error:', existingError);
+        return await ctx.reply('Xatolik yuz berdi. Keyinroq urinib ko‘ring.');
+      }
 
-    // Get current registration count
-    const { count, error: countError } = await supabase
-      .from('registration')
-      .select('*', { count: 'exact', head: true });
+      if (existingUser) {
+        const paddedOrder = String(existingUser.order_number).padStart(3, '0');
+        ctx.session.waitingForName = false;
+        return await ctx.reply(
+          `Siz allaqachon ro‘yxatdan o‘tgansiz ✅\n` +
+            `Sizning tartib raqamingiz: #${paddedOrder}`
+        );
+      }
 
-    if (countError) {
-      console.error('Count error:', countError);
-      return await ctx.reply('Xatolik yuz berdi. Iltimos keyinroq urinib ko‘ring.');
-    }
+      // 🧮 Use a transaction-like pattern to get safe incremental order
+      const { data: latestUser, error: latestError } = await supabase
+        .from('registration')
+        .select('order_number')
+        .order('order_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-    const order_number = (count || 0) + 1;
-    const paddedOrder = String(order_number).padStart(3, '0');
+      if (latestError) {
+        console.error('Order number fetch error:', latestError);
+        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
+      }
 
-    // Insert new user
-    const { error: insertError } = await supabase.from('registration').insert([
-      { telegram_id, username, full_name, order_number },
-    ]);
+      const nextOrder = (latestUser?.order_number || 0) + 1;
+      const paddedOrder = String(nextOrder).padStart(3, '0');
 
-    if (insertError) {
-      console.error('Insert error:', insertError);
-      return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
-    }
+      // 📝 Insert new record
+      const { error: insertError } = await supabase.from('registration').insert([
+        { telegram_id, username, full_name, order_number: nextOrder },
+      ]);
 
-    // Persistent main menu after registration
-    const mainKeyboard = Markup.keyboard([
-      ['📖 Kitob Haqida'],
-      ['🎧 Kitob Audiosi'],
-      ['ℹ️ Jamoa Haqida']
-    ]).resize().persistent();
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
+      }
 
-    // Messages to send
-    const messages = [
-      ctx.reply(
+      // ✅ Main menu keyboard
+      const mainKeyboard = Markup.keyboard([
+        ['📖 Kitob Haqida'],
+        ['🎧 Kitob Audiosi'],
+        ['ℹ️ Jamoa Haqida']
+      ])
+        .resize()
+        .persistent();
+
+      // 💬 Sequential user messages
+      await ctx.reply(
         `${full_name}, kitobxonlar safimizga qo‘shilganingizdan xursandmiz! 😊\n` +
           `Siz muvaffaqiyatli ro‘yxatdan o‘tdingiz ✅\n` +
           `Sizning tartib raqamingiz: #${paddedOrder}`,
         mainKeyboard
-      ),
-      ctx.reply(
+      );
+
+      await ctx.reply(
         `Iltimos, ushbu botdan foydalanish qoidalariga e’tibor bering:\n` +
           `— Musobaqa yakunlanmaguncha botni o‘chirib yubormang.\n` +
           `— Kitob o‘qish muddati tugagach, test havolasi shu bot orqali yuboriladi.`
-      ),
-    ];
-
-    // Notify group chat if configured
-    if (config.GROUP_CHAT_ID) {
-      messages.push(
-        bot.telegram.sendMessage(
-          config.GROUP_CHAT_ID,
-          `🆕 Yangi ishtirokchi ro‘yxatdan o‘tdi!\n\n👤 Ism: ${full_name}\n🆔 Telegram: @${username}\n📋 Tartib raqami: #${paddedOrder}`
-        )
       );
-    }
 
-    await Promise.all(messages);
-    ctx.session.waitingForName = false;
+      // 📢 Notify admin group (non-blocking)
+      if (config.GROUP_CHAT_ID) {
+        bot.telegram
+          .sendMessage(
+            config.GROUP_CHAT_ID,
+            [
+              `🆕 *Yangi ishtirokchi ro‘yxatdan o‘tdi!*`,
+              ``,
+              `👤 Ism: *${full_name}*`,
+              `🆔 Telegram: @${username}`,
+              `📋 Tartib raqami: *#${paddedOrder}*`,
+            ].join('\n'),
+            { parse_mode: 'Markdown' }
+          )
+          .catch((err) =>
+            console.warn('Group notification error (ignored):', err.message)
+          );
+      }
+
+      // ✅ Cleanup session
+      ctx.session.waitingForName = false;
+    } catch (err) {
+      console.error('❌ Text handler error:', err);
+      await ctx.reply('Kutilmagan xatolik yuz berdi, iltimos keyinroq urinib ko‘ring.');
+      ctx.session.waitingForName = false; // always reset on fail
+    }
   });
 };
