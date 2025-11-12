@@ -47,7 +47,9 @@ export const registerTextHandler = (bot) => {
 
     // Persistent main menu after registration
     const mainKeyboard = Markup.keyboard([
-      ['📖 Book Info', '🎧 Book Audios', 'ℹ️ About Us']
+      ['📖 Kitob Haqida'],
+      ['🎧 Kitob Audiosi'],
+      ['ℹ️ Jamoa Haqida']
     ]).resize().persistent();
 
     // Messages to send
