@@ -20,9 +20,9 @@ export async function trackStartClick(ctx) {
       const lastClick = new Date(existing[0].created_at);
       const hoursSinceLast = (Date.now() - lastClick.getTime()) / (1000 * 60 * 60);
 
-      if (hoursSinceLast < 24) {
+      if (hoursSinceLast < 5) {
         console.log(`⏳ Skipped logging for ${username} (last click ${hoursSinceLast.toFixed(2)}h ago)`);
-        return; // Skip insert if within 24h
+        return; // Skip insert if within 5h
       }
     }
 

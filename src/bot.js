@@ -5,9 +5,12 @@ import { registerActions } from './actions.js';
 import { registerTextHandler } from './textHandler.js';
 import { registerAdminCommands } from './commands/adminCommands.js';
 import { registerAdminTextHandler } from './adminTextHandler.js';
+import { registerActivityTracking } from './reports/activityTracking.js';
 
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
 bot.use(session());
+
+registerActivityTracking(bot);
 
 // Register separate logic
 registerCommands(bot);
