@@ -30,7 +30,9 @@ export const registerCommands = (bot) => {
       if (error && error.code !== 'PGRST116') throw error; // ignore "no rows" error
 
       const mainKeyboard = Markup.keyboard([
-        ['📖 Book Info', '🎧 Book Audios', 'ℹ️ About Us'],
+        ['📖 Kitob Haqida'],
+        ['🎧 Kitob Audiosi'],
+        ['ℹ️ Jamoa Haqida']
       ])
         .resize()
         .persistent();
@@ -80,7 +82,7 @@ export const registerCommands = (bot) => {
   });
 
   // 📖 BOOK INFO
-  bot.hears('📖 Book Info', async (ctx) => {
+  bot.hears('📖 Kitob Haqida', async (ctx) => {
     const photoPath = path.resolve(__dirname, '../imgs/book_photo.jpg');
 
     const caption = [
@@ -111,9 +113,11 @@ export const registerCommands = (bot) => {
   });
 
   // 🎧 BOOK AUDIOS MENU
-  bot.hears('🎧 Book Audios', async (ctx) => {
+  bot.hears('🎧 Kitob Audiosi', async (ctx) => {
     const audioMenu = Markup.keyboard([
-      ['Sohilsiz Dengiz 1–7', 'Sohilsiz Dengiz 8–15', 'Sohilsiz Dengiz 16–22'],
+      ['Sohilsiz Dengiz 1–7'],
+      ['Sohilsiz Dengiz 8–15'],
+      ['Sohilsiz Dengiz 16–22'],
       ['🔙 Orqaga'],
     ])
       .resize()
@@ -130,7 +134,9 @@ export const registerCommands = (bot) => {
   // 🔙 BACK BUTTON
   bot.hears('🔙 Orqaga', async (ctx) => {
     const mainKeyboard = Markup.keyboard([
-      ['📖 Book Info', '🎧 Book Audios', 'ℹ️ About Us'],
+      ['📖 Kitob Haqida'],
+      ['🎧 Kitob Audiosi'],
+      ['ℹ️ Jamoa Haqida']
     ])
       .resize()
       .persistent();
@@ -139,7 +145,7 @@ export const registerCommands = (bot) => {
   });
 
   // ℹ️ ABOUT US
-  bot.hears('ℹ️ About Us', async (ctx) => {
+  bot.hears('ℹ️ Jamoa Haqida', async (ctx) => {
     await ctx.replyWithMediaGroup([
       {
         type: 'photo',
