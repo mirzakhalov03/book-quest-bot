@@ -69,12 +69,13 @@ export const registerCommands = (bot) => {
           mainKeyboard
         );
 
-        await ctx.reply(
+        await ctx.replyWithHTML(
           [
-            `Iltimos, loyihada ushbu botdan foydalanish qoidalari bilan tanishib chiqing:`,
-            ``,
-            `— Musobaqa yakunlanmaguncha botni o‘chirib yubormang.`,
-            `— Kitob o‘qish muddati tugagach, sizga test havolasi shu bot orqali yuboriladi.`,
+            `<b>Iltimos, qoidalar bilan tanishing:</b>\n` +
+            `\n` +
+            `— Tanlov ohirigacha <b>botni o‘chirib yubormang</b>.\n` +
+            `— Tanlov yakunida test havolasi shu bot orqali yuboriladi.\n`+
+            `— Bot orqali tanlov haqida ko'proq ma'lumot olishingiz mumkin`
           ].join('\n')
         );
 
@@ -87,7 +88,7 @@ export const registerCommands = (bot) => {
           `Assalomu alaykum, kitobxon do‘stim! 😊`,
           `<b>📚 Book Quest loyihasiga xush kelibsiz!</b>`,
           ``,
-          `Bu loyiha orqali biz har oy yangi kitobni birgalikda o‘qib, yakunda qisqa test orqali bilimimizni sinaymiz.`,
+          `Bu loyihada - kitob o'qish orqali sovg'alar yutib olish imkoniyatiga ega bo'lasiz.`,
           ``,
           `Ro‘yxatdan o‘tishni xohlaysizmi?`,
         ].join('\n'),
@@ -111,22 +112,19 @@ export const registerCommands = (bot) => {
       ``,
       `📊 <b>Janr:</b> Ilmiy-tarixiy roman`,
       `📄 <b>Sahifalar:</b> 254`,
-      `🕰 <b>O‘qish muddati:</b> 10 kun`,
-      `🎯 <b>Qiyinlik darajasi:</b> O‘rta`,
-      `🌐 <b>Til:</b> O‘zbek`,
+      `🕰 <b>O‘qish muddati:</b> 20.11 - 30.11`,
       ``,
       `💭 <i>"Sohilsiz Dengiz" — Ahmad Muhammad Tursun tomonidan yozilgan ilmiy-tarixiy roman. Kitob mashhur muhaddis Imom al-Buxoriyning hayoti, ilmiy izlanishlari va ustoz-shogird aloqalarini badiiy tarzda ochib beradi.</i>`,
       ``,
       `📍 <b>QAYERDAN TOPISH MUMKIN?</b>`,
       ``,
       `<b>📚 QOG‘OZ KITOB:</b>`,
-      `🏪 <a href="https://t.me/HilolNashr/28905">Hilol Nashr</a> va kitob do‘konlar`,
+      `🏪 <a href="https://t.me/HilolNashr/28905">Hilol Nashr</a> yoki boshqa kitob do‘konlardan`,
       `💰 Narx: 43,000 – 50,000 so‘m`,
       ``,
       `<b>🎧 AUDIO KITOB:</b>`,
-      `– Book Quest Bot`,
+      `– <a href="https://t.me/bookquest_bot">Maxsus botimiz orqali</a>`,
       `– <a href="https://youtu.be/sEp36sGbNDQ?si=6o2JCl_YJm2ZwFlX">YouTube</a>`,
-      `– Telegram Audio Kitob kanallari`,
     ].join('\n');
 
     await ctx.replyWithPhoto({ source: photoPath }, { caption, parse_mode: 'HTML' });
@@ -215,7 +213,6 @@ async function sendAudioRange(ctx, start, end) {
       await new Promise((r) => setTimeout(r, 200)); // slight delay to avoid rate limits
     }
 
-    await ctx.reply('✅ Barcha audios yuborildi.');
   } catch (err) {
     console.error('Audio send error:', err);
     await ctx.reply('❌ Audio yuborishda xatolik yuz berdi.');

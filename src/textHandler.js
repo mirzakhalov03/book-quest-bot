@@ -77,16 +77,20 @@ export const registerTextHandler = (bot) => {
 
       // 💬 Sequential user messages
       await ctx.reply(
-        `${full_name}, kitobxonlar safimizga qo‘shilganingizdan xursandmiz! 😊\n` +
+        `${full_name}, kitobxonlar safiga qo‘shilganingizdan xursandmiz! 😊\n` +
           `Siz muvaffaqiyatli ro‘yxatdan o‘tdingiz ✅\n` +
           `Sizning tartib raqamingiz: #${paddedOrder}`,
         mainKeyboard
       );
 
-      await ctx.reply(
-        `Iltimos, ushbu botdan foydalanish qoidalariga e’tibor bering:\n` +
-          `— Musobaqa yakunlanmaguncha botni o‘chirib yubormang.\n` +
-          `— Kitob o‘qish muddati tugagach, test havolasi shu bot orqali yuboriladi.`
+      await ctx.replyWithHTML(
+        [
+          `<b>Iltimos, qoidalar bilan tanishing:</b>\n` +
+          `\n` +
+          `— Tanlov ohirigacha <b>botni o‘chirib yubormang</b>.\n` +
+          `— Tanlov yakunida test havolasi shu bot orqali yuboriladi.\n`+
+          `— Bot orqali tanlov haqida ko'proq ma'lumot olishingiz mumkin`
+        ].join('\n')
       );
 
       // 📢 Notify admin group (non-blocking)
