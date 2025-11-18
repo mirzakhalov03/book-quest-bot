@@ -11,7 +11,9 @@ export const registerActions = (bot) => {
       ctx.session ??= {};
       ctx.session.waitingForName = true;
       await ctx.reply(
-        "Iltimos, to‘liq ismingizni kiriting (ism va familiya). Masalan: *Javohir Mirzakhalov*",
+        "Iltimos, to‘liq ismingizni kiriting (ism va familiya). Masalan: *Javohir Mirzakhalov*" +
+        "\n\n" + 
+        "📌 Eslatma: loyihada ishtirok etish uchun to'g'ri va to'liq ism-familiyangiz talab etiladi",
         { parse_mode: 'Markdown' }
       );
     });
