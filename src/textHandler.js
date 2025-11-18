@@ -28,7 +28,7 @@ export const registerTextHandler = (bot) => {
 
       if (existingError && existingError.code !== 'PGRST116') {
         console.error('Existing user check error:', existingError);
-        return await ctx.reply('Xatolik yuz berdi. Keyinroq urinib ko‘ring.');
+        return await ctx.reply('Xatolik yuz berdi. Keyinroq urinib ko‘ring yoki iltimos, @mirzakhalov03 bilan bog‘laning.');
       }
 
       if (existingUser) {
@@ -50,7 +50,7 @@ export const registerTextHandler = (bot) => {
 
       if (latestError) {
         console.error('Order number fetch error:', latestError);
-        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
+        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi. Iltimos, @mirzakhalov03 bilan bog‘laning.');
       }
 
       const nextOrder = (latestUser?.order_number || 0) + 1;
@@ -63,12 +63,13 @@ export const registerTextHandler = (bot) => {
 
       if (insertError) {
         console.error('Insert error:', insertError);
-        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi.');
+        return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi. Iltimos, @mirzakhalov03 bilan bog‘laning.');
       }
 
       // ✅ Main menu keyboard
       const mainKeyboard = Markup.keyboard([
         ['📖 Kitob Haqida'],
+        ["🏆 Sovg'alar"],
         ['🎧 Kitob Audiosi'],
         ['ℹ️ Jamoa Haqida']
       ])
@@ -116,7 +117,7 @@ export const registerTextHandler = (bot) => {
       ctx.session.waitingForName = false;
     } catch (err) {
       console.error('❌ Text handler error:', err);
-      await ctx.reply('Kutilmagan xatolik yuz berdi, iltimos keyinroq urinib ko‘ring.');
+      await ctx.reply('Kutilmagan xatolik yuz berdi, iltimos keyinroq urinib ko‘ring, yoki iltimos, @mirzakhalov03 bilan bog‘laning.');
       ctx.session.waitingForName = false; // always reset on fail
     }
   });

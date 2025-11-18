@@ -23,6 +23,7 @@ try {
 // ✅ Helper: Main Keyboard
 const mainKeyboard = Markup.keyboard([
   ['📖 Kitob Haqida'],
+  ["🏆 Sovg'alar"],
   ['🎧 Kitob Audiosi'],
   ['ℹ️ Jamoa Haqida']
 ])
@@ -99,7 +100,7 @@ export const registerCommands = (bot) => {
       );
     } catch (err) {
       console.error('⚠️ /start error:', err);
-      await ctx.reply('Xatolik yuz berdi, iltimos keyinroq urinib ko‘ring.');
+      await ctx.reply('Xatolik yuz berdi, iltimos keyinroq urinib ko‘ring, yoki @mirzakhalov03 bilan bog‘laning.');
     }
   });
 
@@ -113,22 +114,46 @@ export const registerCommands = (bot) => {
       `📊 <b>Janr:</b> Ilmiy-tarixiy roman`,
       `📄 <b>Sahifalar:</b> 254`,
       `🕰 <b>O‘qish muddati:</b> 20.11 - 30.11`,
+      `🌐 <b>Tili:</b> O‘zbekcha`,
       ``,
       `💭 <i>"Sohilsiz Dengiz" — Ahmad Muhammad Tursun tomonidan yozilgan ilmiy-tarixiy roman. Kitob mashhur muhaddis Imom al-Buxoriyning hayoti, ilmiy izlanishlari va ustoz-shogird aloqalarini badiiy tarzda ochib beradi.</i>`,
       ``,
       `📍 <b>QAYERDAN TOPISH MUMKIN?</b>`,
       ``,
       `<b>📚 QOG‘OZ KITOB:</b>`,
-      `🏪 <a href="https://t.me/HilolNashr/28905">Hilol Nashr</a> yoki boshqa kitob do‘konlardan`,
+      `🏪 <a href="https://t.me/HilolNashr/28905">Hilol Nashr</a> yoki boshqa kitob do‘konlaridan`,
       `💰 Narx: 43,000 – 50,000 so‘m`,
       ``,
       `<b>🎧 AUDIO KITOB:</b>`,
-      `– <a href="https://t.me/bookquest_bot">Maxsus botimiz orqali</a>`,
+      `– Book Quest boti orqali`,
       `– <a href="https://youtu.be/sEp36sGbNDQ?si=6o2JCl_YJm2ZwFlX">YouTube</a>`,
     ].join('\n');
 
     await ctx.replyWithPhoto({ source: photoPath }, { caption, parse_mode: 'HTML' });
   });
+
+  bot.hears("🏆 Sovg'alar", async (ctx) => {
+    const photoPath = path.resolve(__dirname, '../imgs/prizes.png');
+    const caption = [
+      `🏆 <b>SOVG'ALAR</b>`,
+      ``,
+      `🎁 Kitob o'qish orqali quyidagi sovg'alarni yutib olish imkoniyatiga ega bo'lasiz:`,
+      `<blockquote>`,
+      `<b>🥇 1. Smartwatch + “Xalqa” kitobi</b> `,
+      `<b>🥈 2. Quloqchin + “Falastin” kitobi</b> `,
+      `<b>🥉 3. Termos + “Muqaddima” kitobi</b>`,
+      `<b>🏅 4. Telegram Premium + “Alloh sari 20 bekat” kitobi</b>`,
+      `<b>🏅 5. Mutolaa Premium</b>`,
+      `</blockquote>`,
+      ``,
+      `📅 G'oliblar tanlov yakunida, 30-noyabr kuni e'lon qilinadi.`,
+      ``,
+      `📢 Eslatma: Sovg'alarni yutib olish uchun kitobni oxirigacha o'qish va testdan muvaffaqiyatli o'tish talab etiladi.`,
+      ``,
+      `@bookquest_bot`,
+    ].join('\n');
+    await ctx.replyWithPhoto({ source: photoPath }, { caption, parse_mode: 'HTML' });
+    })
 
   // 🎧 BOOK AUDIOS MENU
   bot.hears('🎧 Kitob Audiosi', async (ctx) => {
@@ -175,6 +200,9 @@ export const registerCommands = (bot) => {
           `<b>Co-Founder & Manager</b>`,
           `🎓 INHA University, Computer Science`,
           `🚀 SATashkent’da Frontend dasturchi`,
+          ``,
+          `<b>Maslahatchi va Homiy:</b>`,
+          `<blockquote><b>💰<a href="https://t.me/maxmudjon_571">Mahmudjon Maxmudov</a></b></blockquote>`
         ].join('\n'),
         parse_mode: 'HTML',
       },
@@ -203,7 +231,7 @@ async function sendAudioRange(ctx, start, end) {
     });
 
     if (!selected.length) {
-      return ctx.reply('⚠️ Ushbu oraliqda audio topilmadi.');
+      return ctx.reply('⚠️ Ushbu oraliqda audio topilmadi. Iltimos, @mirzakhalov03 bilan bog‘laning.');
     }
 
     for (const audio of selected) {
@@ -215,6 +243,6 @@ async function sendAudioRange(ctx, start, end) {
 
   } catch (err) {
     console.error('Audio send error:', err);
-    await ctx.reply('❌ Audio yuborishda xatolik yuz berdi.');
+    await ctx.reply('❌ Audio yuborishda xatolik yuz berdi. Iltimos, @mirzakhalov03 bilan bog‘laning.');
   }
 }
