@@ -17,7 +17,9 @@ export const registerTextHandler = (bot) => {
 
       const full_name = formatted;
       const telegram_id = ctx.from.id;
-      const username = ctx.from.username || 'no_username';
+      const username = typeof ctx.from.username === 'string' && ctx.from.username.trim() !== ''
+  ? ctx.from.username
+  : '';
 
       // 🔐 Prevent duplicate registration
       const { data: existingUser, error: existingError } = await supabase
