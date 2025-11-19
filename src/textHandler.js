@@ -105,7 +105,7 @@ export const registerTextHandler = (bot) => {
               `🆕 *Yangi ishtirokchi ro‘yxatdan o‘tdi!*`,
               ``,
               `👤 Ism: *${full_name}*`,
-              `🆔 Telegram: @${username}`,
+              `🆔 Telegram: ${username ? '@' + username : '—'}`,
               `📋 Tartib raqami: *#${paddedOrder}*`,
             ].join('\n'),
             { parse_mode: 'Markdown' }
