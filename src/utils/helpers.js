@@ -7,7 +7,7 @@ export const formatAndValidateFullName = (input) => {
     // Split into words
     const words = trimmed.split(/\s+/);
     if (words.length < 2 || words.length > 3) {
-      return { error: 'Iltimos, to‘liq ism va familiyangizni va kiriting.\nMasalaon: *Javohir Mirzakhalov*' };
+      return { error: 'Iltimos, to‘liq ism va familiyangizni va kiriting.\nMasalan: *Javohir Mirzakhalov*' };
     }
   
     // Only allow letters (Latin & Cyrillic) and some safe symbols

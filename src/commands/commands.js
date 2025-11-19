@@ -138,7 +138,7 @@ export const registerCommands = (bot) => {
   });
 
   bot.hears("🏆 Sovg'alar", async (ctx) => {
-    const photoPath = path.resolve(__dirname, '../imgs/prizes.png');
+    const photoPath = path.resolve(__dirname, '../imgs/prizes_final.jpeg');
     const caption = [
       `🏆 <b>SOVG'ALAR</b>`,
       ``,
@@ -148,7 +148,7 @@ export const registerCommands = (bot) => {
       `<b>🥈 2. Quloqchin + “Falastin” kitobi</b> `,
       `<b>🥉 3. Termos + “Muqaddima” kitobi</b>`,
       `<b>🏅 4. Telegram Premium + “Alloh sari 20 bekat” kitobi</b>`,
-      `<b>🏅 5. Mutolaa Premium</b>`,
+      `<b>🏅 5. Mutolaa Premium + "Bugun bomdod o'qidingizmi?" kitobi</b>`,
       `</blockquote>`,
       ``,
       `📅 G'oliblar tanlov yakunida e'lon qilinadi.`,
