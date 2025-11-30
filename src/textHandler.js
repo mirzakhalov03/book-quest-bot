@@ -45,7 +45,7 @@ export const registerTextHandler = (bot) => {
       if (!registrationOpen) {
         ctx.session.waitingForName = false;
         return await ctx.reply(
-          '🛑 Ro‘yxatdan o‘tish hozir yopiq. Iltimos, keyinroq qayta urinib ko‘ring.'
+          '🛑 Ro‘yxatdan o‘tish to‘xtatilgan. Muammo bo‘lsa @mirzakhalov03 bilan bog‘laning'
         );
       }
 
