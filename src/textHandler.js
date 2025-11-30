@@ -10,18 +10,9 @@ export const registerTextHandler = (bot) => {
       if (ctx.session?.waitingForBroadcast) return;
       if (!ctx.session?.waitingForName) return;
 
-      const { formatted, error } = formatAndValidateFullName(ctx.message.text);
-      if (error) {
-        return await ctx.reply(error, { parse_mode: 'Markdown' });
-      }
-
-      const full_name = formatted;
       const telegram_id = ctx.from.id;
-      const username = typeof ctx.from.username === 'string' && ctx.from.username.trim() !== ''
-  ? ctx.from.username
-  : '';
 
-      // 🔐 Prevent duplicate registration
+      // 🔍 Check if user already exists
       const { data: existingUser, error: existingError } = await supabase
         .from('registration')
         .select('id, order_number')
@@ -42,7 +33,33 @@ export const registerTextHandler = (bot) => {
         );
       }
 
-      // 🧮 Use a transaction-like pattern to get safe incremental order
+      // 🛑 NEW: Check if registration is open
+      const { data: setting } = await supabase
+        .from('settings')
+        .select('value')
+        .eq('key', 'registration_open')
+        .single();
+
+      const registrationOpen = setting?.value ?? true;
+
+      if (!registrationOpen) {
+        ctx.session.waitingForName = false;
+        return await ctx.reply(
+          '🛑 Ro‘yxatdan o‘tish hozir yopiq. Iltimos, keyinroq qayta urinib ko‘ring.'
+        );
+      }
+
+      // ✅ Continue original registration process
+      const { formatted, error } = formatAndValidateFullName(ctx.message.text);
+      if (error) {
+        return await ctx.reply(error, { parse_mode: 'Markdown' });
+      }
+
+      const full_name = formatted;
+      const username = typeof ctx.from.username === 'string' && ctx.from.username.trim() !== ''
+        ? ctx.from.username
+        : '';
+
       const { data: latestUser, error: latestError } = await supabase
         .from('registration')
         .select('order_number')
@@ -58,7 +75,6 @@ export const registerTextHandler = (bot) => {
       const nextOrder = (latestUser?.order_number || 0) + 1;
       const paddedOrder = String(nextOrder).padStart(3, '0');
 
-      // 📝 Insert new record
       const { error: insertError } = await supabase.from('registration').insert([
         { telegram_id, username, full_name, order_number: nextOrder },
       ]);
@@ -68,7 +84,6 @@ export const registerTextHandler = (bot) => {
         return await ctx.reply('Ro‘yxatdan o‘tishda xatolik yuz berdi. Iltimos, @mirzakhalov03 bilan bog‘laning.');
       }
 
-      // ✅ Main menu keyboard
       const mainKeyboard = Markup.keyboard([
         ['📖 Kitob Haqida'],
         ["🏆 Sovg'alar"],
@@ -78,7 +93,6 @@ export const registerTextHandler = (bot) => {
         .resize()
         .persistent();
 
-      // 💬 Sequential user messages
       await ctx.reply(
         `${full_name}, kitobxonlar safiga qo‘shilganingizdan xursandmiz! 😊\n` +
           `Siz muvaffaqiyatli ro‘yxatdan o‘tdingiz ✅\n` +
@@ -96,7 +110,6 @@ export const registerTextHandler = (bot) => {
         ].join('\n')
       );
 
-      // 📢 Notify admin group (non-blocking)
       if (config.GROUP_CHAT_ID) {
         bot.telegram
           .sendMessage(
@@ -115,12 +128,11 @@ export const registerTextHandler = (bot) => {
           );
       }
 
-      // ✅ Cleanup session
       ctx.session.waitingForName = false;
     } catch (err) {
       console.error('❌ Text handler error:', err);
       await ctx.reply('Kutilmagan xatolik yuz berdi, iltimos keyinroq urinib ko‘ring, yoki iltimos, @mirzakhalov03 bilan bog‘laning.');
-      ctx.session.waitingForName = false; // always reset on fail
+      ctx.session.waitingForName = false;
     }
   });
 };
