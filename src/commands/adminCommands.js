@@ -12,7 +12,7 @@ export const registerAdminCommands = (bot) => {
     if (!isAdmin(userId)) return ctx.reply('❌ Siz admin emassiz.');
 
     ctx.session ??= {};
-    ctx.session.waitingForBroadcastMessage = true;
+    ctx.session.waitingForBroadcast = true;
 
     await ctx.reply('✏️ Iltimos, barcha foydalanuvchilarga yubormoqchi bo‘lgan xabarni kiriting:');
   });
@@ -36,9 +36,9 @@ export const registerAdminCommands = (bot) => {
     ctx.session ??= {};
 
     // ======= BROADCAST MESSAGE (for /broadcast) =======
-    if (ctx.session.waitingForBroadcastMessage) {
+    if (ctx.session.waitingForBroadcast) {
       const message = ctx.message.text.trim();
-      ctx.session.waitingForBroadcastMessage = false;
+      ctx.session.waitingForBroadcast = false;
 
       if (!message) return ctx.reply('❌ Xabar bo‘sh bo‘lishi mumkin emas.');
 
